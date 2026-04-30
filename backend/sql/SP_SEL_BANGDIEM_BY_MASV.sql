@@ -1,0 +1,20 @@
+CREATE OR ALTER PROCEDURE SP_SEL_BANGDIEM_BY_MASV
+    @MASV VARCHAR(20),
+    @MANV_LOGIN VARCHAR(20),
+    @MK_NV NVARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT
+        hp.MAHP,
+        hp.TENHP,
+        hp.SOTC,
+        bd.DIEM
+    FROM HOCPHAN AS hp
+    LEFT JOIN BANGDIEM AS bd
+        ON bd.MAHP = hp.MAHP
+       AND bd.MASV = @MASV
+    ORDER BY hp.MAHP;
+END;
+GO

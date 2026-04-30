@@ -1,0 +1,323 @@
+<!doctype html>
+<!-- Template: Login Page -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - SecureAdmin</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <style>
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 24px;
+        background: linear-gradient(135deg, #dbe1ff 0%, #eff4ff 100%);
+      }
+
+      .login-container {
+        width: 100%;
+        max-width: 420px;
+      }
+
+      .login-card {
+        background-color: white;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        padding: 32px;
+        box-shadow: 0 10px 40px rgba(0, 17, 58, 0.1);
+        position: relative;
+      }
+
+      .tls-indicator {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: #eff4ff;
+        border: 1px solid #cbd5e1;
+        border-radius: 0 12px 0 12px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 10px;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .tls-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #00a86b;
+      }
+
+      .login-header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .login-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background-color: #dbe1ff;
+        color: #00113a;
+        margin-bottom: 16px;
+        font-size: 36px;
+      }
+
+      .login-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #00113a;
+        margin-bottom: 8px;
+      }
+
+      .login-subtitle {
+        font-size: 14px;
+        color: #64748b;
+        line-height: 1.5;
+      }
+
+      .security-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        background-color: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        font-size: 11px;
+        font-weight: 600;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 12px;
+      }
+
+      .security-badge .material-symbols-outlined {
+        font-size: 14px;
+        color: #00a86b;
+      }
+
+      .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .form-group-login {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .form-label-login {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0b1c30;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+
+      .input-icon {
+        position: absolute;
+        left: 12px;
+        color: #cbd5e1;
+        font-size: 20px;
+        pointer-events: none;
+      }
+
+      .form-input-login {
+        width: 100%;
+        padding: 12px 12px 12px 40px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #0b1c30;
+        background-color: #f8fafc;
+        transition: all 0.2s ease-in-out;
+        font-family: "Inter", sans-serif;
+      }
+
+      .form-input-login:focus {
+        outline: none;
+        background-color: white;
+        border-color: #00113a;
+        box-shadow: 0 0 0 3px rgba(0, 17, 58, 0.1);
+      }
+
+      .password-toggle {
+        position: absolute;
+        right: 12px;
+        background: none;
+        border: none;
+        color: #cbd5e1;
+        cursor: pointer;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .password-toggle:hover {
+        color: #64748b;
+      }
+
+      .submit-button {
+        margin-top: 8px;
+        padding: 12px;
+        background-color: #00113a;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+
+      .submit-button:hover {
+        background-color: #002366;
+        box-shadow: 0 4px 12px rgba(0, 17, 58, 0.2);
+      }
+
+      .submit-button:active {
+        transform: translateY(1px);
+      }
+
+      .login-footer {
+        margin-top: 24px;
+        padding-top: 24px;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        font-size: 12px;
+        color: #64748b;
+        line-height: 1.5;
+      }
+
+      .login-footer a {
+        color: #00113a;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .login-footer a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-card">
+        <div class="tls-indicator">
+          <div class="tls-dot"></div>
+          <span>TLS v1.3</span>
+        </div>
+
+        <div class="login-header">
+          <div class="login-icon">
+            <span class="material-symbols-outlined">security</span>
+          </div>
+          <h1 class="login-title">SecureAdmin</h1>
+          <p class="login-subtitle">
+            Student Management System with Public Key Encryption
+          </p>
+          <div class="security-badge">
+            <span class="material-symbols-outlined">lock</span>
+            <span>RSA/SHA1 Active</span>
+          </div>
+        </div>
+
+        <form class="login-form" action="dashboard.html" method="post">
+          <div class="form-group-login">
+            <label class="form-label-login" for="username"
+              >Employee ID / Username</label
+            >
+            <div class="input-wrapper">
+              <span class="material-symbols-outlined input-icon">person</span>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-input-login"
+                placeholder="Enter employee ID or username"
+                required
+                autofocus
+              />
+            </div>
+          </div>
+
+          <div class="form-group-login">
+            <label class="form-label-login" for="password">Password</label>
+            <div class="input-wrapper">
+              <span class="material-symbols-outlined input-icon">key</span>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-input-login"
+                placeholder="••••••••"
+                required
+              />
+              <button
+                type="button"
+                class="password-toggle"
+                onclick="togglePassword()"
+                title="Show/Hide Password"
+              >
+                <span class="material-symbols-outlined">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-button">
+            <span class="material-symbols-outlined">login</span>
+            <span>Sign In</span>
+          </button>
+        </form>
+
+        <div class="login-footer">
+          By signing in, you agree to the
+          <a href="#">Privacy Policy</a>
+          and
+          <a href="#">Terms of Service</a>.
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function togglePassword() {
+        const input = document.getElementById("password");
+        const btn = document.querySelector(".password-toggle");
+        if (input.type === "password") {
+          input.type = "text";
+          btn.innerHTML =
+            '<span class="material-symbols-outlined">visibility_off</span>';
+        } else {
+          input.type = "password";
+          btn.innerHTML =
+            '<span class="material-symbols-outlined">visibility</span>';
+        }
+      }
+    </script>
+  </body>
+</html>

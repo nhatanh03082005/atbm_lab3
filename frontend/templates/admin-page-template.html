@@ -1,0 +1,191 @@
+<!doctype html>
+<!-- Template: Admin Page with Sidebar and Header -->
+<!-- Copy this structure to create new pages -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Title - SecureAdmin</title>
+    <link rel="stylesheet" href="../assets/css/styles.css" />
+    <link rel="stylesheet" href="../assets/css/components.css" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  </head>
+  <body>
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="app-header-brand">SecureAdmin</div>
+      <div style="display: flex; align-items: center; gap: 8px">
+        <!-- Search bar here if needed -->
+        <button class="btn btn-icon" title="Notifications">
+          <span class="material-symbols-outlined">notifications</span>
+        </button>
+        <button class="btn btn-icon" title="Security">
+          <span class="material-symbols-outlined">shield</span>
+        </button>
+        <img
+          src="https://via.placeholder.com/32"
+          alt="Profile"
+          style="
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #cbd5e1;
+          "
+        />
+      </div>
+    </header>
+
+    <!-- App Sidebar -->
+    <nav class="app-sidebar">
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <img
+          src="https://via.placeholder.com/40"
+          alt="Admin"
+          class="sidebar-avatar"
+        />
+        <div>
+          <div class="sidebar-title">Admin Portal</div>
+          <div class="sidebar-subtitle">
+            <span class="material-symbols-outlined" style="font-size: 12px"
+              >lock</span
+            >
+            <span>SHA1 Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Navigation Menu -->
+      <div class="sidebar-menu">
+        <a href="dashboard.html" class="sidebar-menu-item">
+          <span class="material-symbols-outlined">dashboard</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="manageclassroom.html" class="sidebar-menu-item">
+          <span class="material-symbols-outlined">school</span>
+          <span>Classes</span>
+        </a>
+        <a href="managestudent.html" class="sidebar-menu-item">
+          <span class="material-symbols-outlined">group</span>
+          <span>Students</span>
+        </a>
+        <a href="enterscore.html" class="sidebar-menu-item">
+          <span class="material-symbols-outlined">grade</span>
+          <span>Grades</span>
+        </a>
+        <a href="infoemployee.html" class="sidebar-menu-item">
+          <span class="material-symbols-outlined">account_circle</span>
+          <span>Profile</span>
+        </a>
+      </div>
+
+      <!-- Footer Navigation -->
+      <div class="sidebar-footer">
+        <a
+          href="#"
+          class="sidebar-menu-item"
+          onclick="
+            openSecuritySettings();
+            return false;
+          "
+        >
+          <span class="material-symbols-outlined">lock_open</span>
+          <span>Security Settings</span>
+        </a>
+        <a
+          href="login.html"
+          class="sidebar-menu-item"
+          onclick="
+            handleLogout();
+            return false;
+          "
+        >
+          <span class="material-symbols-outlined">logout</span>
+          <span>Logout</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <div class="app-container">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Page Title</h1>
+            <p class="page-subtitle">
+              <span class="material-symbols-outlined" style="font-size: 16px"
+                >info</span
+              >
+              Description of the page content
+            </p>
+          </div>
+          <button class="btn btn-primary">
+            <span class="material-symbols-outlined">add</span>
+            Add New
+          </button>
+        </div>
+
+        <!-- Page Content -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <span class="material-symbols-outlined">folder</span>
+            </div>
+            <h2 class="card-title">Content Section</h2>
+          </div>
+
+          <p>Your page content goes here.</p>
+
+          <!-- Example Table -->
+          <table class="data-table" style="margin-top: 24px">
+            <thead>
+              <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <th style="text-align: right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Data 1</td>
+                <td>Data 2</td>
+                <td>Data 3</td>
+                <td style="text-align: right">
+                  <button class="btn btn-icon" title="Edit">
+                    <span class="material-symbols-outlined">edit</span>
+                  </button>
+                  <button class="btn btn-icon" title="Delete">
+                    <span class="material-symbols-outlined">delete</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="../assets/js/app.js"></script>
+    <script src="../assets/js/navigation.js"></script>
+    <script>
+      // Initialize page-specific functionality
+      document.addEventListener("DOMContentLoaded", function () {
+        SecureAdmin.initializeNavigation();
+      });
+
+      // Custom functions for this page
+      function handleLogout() {
+        if (confirm("Are you sure you want to logout?")) {
+          window.location.href = "login.html";
+        }
+      }
+
+      function openSecuritySettings() {
+        alert("Security Settings page coming soon");
+      }
+    </script>
+  </body>
+</html>
