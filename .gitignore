@@ -18,14 +18,6 @@ pnpm-debug.log*
 
 # Environment files
 .env
-.env.*
-!.env.example
-backend/.env
-backend/.env.*
-!backend/.env.example
-frontend/.env
-frontend/.env.*
-!frontend/.env.example
 
 # OS files
 .DS_Store
