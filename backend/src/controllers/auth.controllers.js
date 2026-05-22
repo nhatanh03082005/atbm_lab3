@@ -16,16 +16,24 @@ const mapAuthError = (code) => {
 };
 
 const login = async (req, res) => {
-  const { TENDN, MK } = req.body;
+  // Client gửi MATKHAU_HEX: SHA-512 hex của mật khẩu (hash phía client)
+  const { TENDN, MATKHAU_HEX } = req.body;
+
+  if (!TENDN || !MATKHAU_HEX) {
+    return res.status(400).json({ message: "Thiếu TENDN hoặc MATKHAU_HEX" });
+  }
 
   try {
     const pool = await db.poolPromise;
 
+    // Chuyển hex string → Buffer (VARBINARY) để truyền vào SP
+    const matkhauBuffer = Buffer.from(MATKHAU_HEX, "hex");
+
     const result = await pool
       .request()
       .input("TENDN", sql.NVarChar(100), TENDN)
-      .input("MK", sql.NVarChar(100), MK)
-      .execute("SP_SEL_PUBLIC_NHANVIEN");
+      .input("MATKHAU", sql.VarBinary(sql.MAX), matkhauBuffer)
+      .execute("SP_SEL_PUBLIC_ENCRYPT_NHANVIEN");
 
     const user = result.recordset[0];
 
@@ -37,13 +45,13 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      {
-        MANV: user.MANV,
-        TENDN,
-      },
+      { MANV: user.MANV, TENDN },
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
+
+    // LUONG là VARBINARY (cipher) → chuyển sang base64 để gửi xuống client
+    const luongBase64 = user.LUONG ? user.LUONG.toString("base64") : null;
 
     res.json({
       message: "Đăng nhập thành công",
@@ -52,7 +60,8 @@ const login = async (req, res) => {
         MANV: user.MANV,
         HOTEN: user.HOTEN,
         EMAIL: user.EMAIL,
-        LUONGCB: user.LUONGCB,
+        LUONG: luongBase64,  // cipher, client tự giải mã bằng private key
+        PUBKEY: user.PUBKEY, // PEM public key, client dùng để mã hoá điểm
       },
     });
   } catch (err) {

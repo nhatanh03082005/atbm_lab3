@@ -3,6 +3,7 @@ import Button from "../components/ui/Button";
 import PageTitle from "../components/common/PageTitle"; 
 import { formatCurrencyVND, getInitials } from "../lib/helpers"; 
 import { useEffect, useState } from "react"; 
+import { decryptRSAWithPassword } from "../utils";
  
 const ICON_MAP = { 
   "Employee ID": "badge", 
@@ -14,6 +15,11 @@ const ICON_MAP = {
 export default function InfoEmployeePage() { 
   const [employeeProfile, setEmployeeProfile] = useState(null); 
   const [showSalary, setShowSalary] = useState(false);
+  const [decryptedSalary, setDecryptedSalary] = useState(null);
+  const [decryptError, setDecryptError] = useState("");
+  const [salaryPassword, setSalaryPassword] = useState("");
+  const [showPasswordPrompt, setShowPasswordPrompt] = useState(false);
+  const [decrypting, setDecrypting] = useState(false);
  
   useEffect(() => { 
     const user = localStorage.getItem("user"); 
@@ -38,12 +44,37 @@ export default function InfoEmployeePage() {
     { label: "Email", value: employeeProfile.EMAIL, icon: ICON_MAP["Email"] }, 
     { 
       label: "Salary", 
-      value: formatCurrencyVND(employeeProfile.LUONGCB), 
+      // Lương đã được giải mã (nếu có), hoặc hiển thị "***"
+      value: decryptedSalary !== null ? formatCurrencyVND(decryptedSalary) : null,
       icon: ICON_MAP["Salary"], 
       isHighlight: true, 
       isSalary: true,
     }, 
   ]; 
+
+  /**
+   * Giải mã lương bằng private key tái tạo từ mật khẩu.
+   * LUONG trong localStorage là base64 cipher (mã RSA).
+   */
+  const handleDecryptSalary = async () => {
+    if (!salaryPassword) return;
+    setDecrypting(true);
+    setDecryptError("");
+    try {
+      const luongBase64 = employeeProfile?.LUONG;
+      if (!luongBase64) {
+        throw new Error("Không có dữ liệu lương để giải mã.");
+      }
+      const plaintext = await decryptRSAWithPassword(luongBase64, salaryPassword);
+      setDecryptedSalary(Number(plaintext));
+      setShowPasswordPrompt(false);
+      setSalaryPassword("");
+    } catch {
+      setDecryptError("Giải mã thất bại. Vui lòng kiểm tra lại mật khẩu.");
+    } finally {
+      setDecrypting(false);
+    }
+  };
  
   const userInitials = getInitials(employeeProfile.HOTEN); 
  
@@ -51,6 +82,57 @@ export default function InfoEmployeePage() {
     <div className="panel-stack"> 
       <PageTitle eyebrow="Profile" title="Employee Information" /> 
  
+      {/* Modal nhập mật khẩu để giải mã lương */}
+      {showPasswordPrompt && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          zIndex: 1000,
+        }}>
+          <div style={{
+            background: "var(--surface, #1e1e2e)", borderRadius: "12px",
+            padding: "2rem", minWidth: "340px", display: "grid", gap: "1rem",
+          }}>
+            <h3 style={{ margin: 0 }}>
+              <span className="material-symbols-outlined" style={{ verticalAlign: "middle", marginRight: 8 }}>lock_open</span>
+              Xác nhận mật khẩu
+            </h3>
+            <p style={{ margin: 0, opacity: 0.7, fontSize: "0.9rem" }}>
+              Nhập mật khẩu đăng nhập để giải mã thông tin lương.
+            </p>
+            <input
+              className="input focus-ring"
+              type="password"
+              placeholder="Mật khẩu"
+              value={salaryPassword}
+              onChange={(e) => setSalaryPassword(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleDecryptSalary()}
+              autoFocus
+            />
+            {decryptError && (
+              <p style={{ color: "var(--error, red)", margin: 0, fontSize: "0.85rem" }}>
+                {decryptError}
+              </p>
+            )}
+            <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+              <Button
+                onClick={() => { setShowPasswordPrompt(false); setSalaryPassword(""); setDecryptError(""); }}
+                style={{ background: "transparent", border: "1px solid var(--outline)" }}
+              >
+                Hủy
+              </Button>
+              <Button
+                className="btn--primary"
+                onClick={handleDecryptSalary}
+                disabled={decrypting || !salaryPassword}
+              >
+                {decrypting ? "Đang giải mã..." : "Xác nhận"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="profile-layout-modern"> 
         {/* Left Side: Identity */} 
         <div className="profile-sidebar-modern"> 
@@ -81,31 +163,44 @@ export default function InfoEmployeePage() {
                         gap: '8px',
                         position: 'relative'
                       }}
-                      onMouseDown={() => setShowSalary(true)}
-                      onMouseUp={() => setShowSalary(false)}
-                      onMouseLeave={() => setShowSalary(false)}
                     >
                       <span 
                         className={`profile-stat-value ${item.isHighlight ? "profile-stat-value--highlight" : ""}`}
-                        style={{
-                          minWidth: '150px',
-                          display: 'inline-block'
-                        }}
+                        style={{ minWidth: '150px', display: 'inline-block' }}
                       > 
-                        {showSalary ? item.value : "********"} 
+                        {decryptedSalary !== null
+                          ? (showSalary ? item.value : "••••••••")
+                          : "[Mã hoá RSA]"}
                       </span>
-                      <span 
-                        className="material-symbols-outlined" 
-                        style={{ 
-                          cursor: 'pointer', 
-                          fontSize: '20px',
-                          userSelect: 'none',
-                          color: showSalary ? '#4f46e5' : '#9ca3af',
-                          flexShrink: 0
-                        }}
-                      >
-                        {showSalary ? 'visibility' : 'visibility_off'}
-                      </span>
+                      {decryptedSalary !== null ? (
+                        // Đã giải mã: toggle hiển thị/ẩn
+                        <span 
+                          className="material-symbols-outlined" 
+                          style={{ 
+                            cursor: 'pointer', fontSize: '20px',
+                            userSelect: 'none',
+                            color: showSalary ? '#4f46e5' : '#9ca3af',
+                          }}
+                          onMouseDown={() => setShowSalary(true)}
+                          onMouseUp={() => setShowSalary(false)}
+                          onMouseLeave={() => setShowSalary(false)}
+                        >
+                          {showSalary ? 'visibility' : 'visibility_off'}
+                        </span>
+                      ) : (
+                        // Chưa giải mã: hiển thị nút mở khóa
+                        <span 
+                          className="material-symbols-outlined" 
+                          title="Giải mã lương"
+                          style={{ 
+                            cursor: 'pointer', fontSize: '20px',
+                            color: '#9ca3af',
+                          }}
+                          onClick={() => setShowPasswordPrompt(true)}
+                        >
+                          lock
+                        </span>
+                      )}
                     </div>
                   ) : (
                     <span 
@@ -122,4 +217,4 @@ export default function InfoEmployeePage() {
       </div> 
     </div> 
   ); 
-}
+}
