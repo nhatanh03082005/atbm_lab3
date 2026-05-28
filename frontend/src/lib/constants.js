@@ -15,6 +15,18 @@ export const NAV_ITEMS = [
   { label: "Grades", icon: "grade", path: ROUTES.SCORES, page: "scores" },
 ];
 
+export const ADMIN_NAV_ITEMS = [
+  {
+    label: "Employees",
+    icon: "group",
+    path: ROUTES.ADMIN_EMPLOYEES,
+    page: "admin-employees",
+  },
+];
+
+export const getNavItems = (role) =>
+  role === "admin" ? ADMIN_NAV_ITEMS : NAV_ITEMS;
+
 export const FOOTER_ITEMS = [
   { label: "Logout", icon: "logout", action: "logout" },
 ];

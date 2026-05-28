@@ -1,7 +1,9 @@
 export const ROUTES = Object.freeze({
   ROOT: "/",
   LOGIN: "/login",
+  REGISTER: "/register",
   EMPLOYEE: "/employee",
+  ADMIN_EMPLOYEES: "/admin/employees",
   CLASSES: "/classes",
   STUDENTS: "/students",
   SCORES: "/scores",
@@ -33,6 +35,35 @@ export function clearAuthentication() {
 
   window.localStorage.removeItem(AUTH_KEY);
   window.localStorage.removeItem(USER_NAME_KEY);
+  window.localStorage.removeItem("token");
+  window.localStorage.removeItem("user");
+  window.localStorage.removeItem("adminAuth");
+}
+
+export function getCurrentUser() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  try {
+    const rawUser = window.localStorage.getItem("user");
+    return rawUser ? JSON.parse(rawUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function getCurrentUserRole() {
+  const user = getCurrentUser();
+  if (!user) {
+    return null;
+  }
+
+  if (user.ROLE === "admin" || user.role === "admin" || user.MAADMIN) {
+    return "admin";
+  }
+
+  return "employee";
 }
 
 export function setCurrentUserName(name) {
@@ -57,5 +88,11 @@ export function getCurrentUserName() {
 }
 
 export function getLandingRoute() {
-  return isAuthenticated() ? ROUTES.EMPLOYEE : ROUTES.LOGIN;
+  if (!isAuthenticated()) {
+    return ROUTES.LOGIN;
+  }
+
+  return getCurrentUserRole() === "admin"
+    ? ROUTES.ADMIN_EMPLOYEES
+    : ROUTES.EMPLOYEE;
 }

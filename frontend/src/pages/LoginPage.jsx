@@ -4,12 +4,13 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import { APP_NAME, APP_TAGLINE, LOGIN_HIGHLIGHTS } from "../lib/constants.js";
 import { ROUTES, setAuthenticated, setCurrentUserName } from "../lib/routes.js";
-import { loginApi } from "../services/authService.js";
+import { loginAdminApi, loginApi } from "../services/authService.js";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ username: "", password: "" });
+  const [loginRole, setLoginRole] = useState("employee");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,15 +20,26 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const data = await loginApi(form.username, form.password);
+      const data =
+        loginRole === "admin"
+          ? await loginAdminApi(form.username, form.password)
+          : await loginApi(form.username, form.password);
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      if (loginRole === "admin" && data.adminAuth) {
+        localStorage.setItem("adminAuth", JSON.stringify(data.adminAuth));
+      } else {
+        localStorage.removeItem("adminAuth");
+      }
 
       setAuthenticated(true);
-      setCurrentUserName(data.user?.HOTEN || form.username);
+      setCurrentUserName(data.user?.HOTEN || data.user?.TENDN || form.username);
 
-      navigate(ROUTES.EMPLOYEE, { replace: true });
+      navigate(
+        loginRole === "admin" ? ROUTES.ADMIN_EMPLOYEES : ROUTES.EMPLOYEE,
+        { replace: true },
+      );
     } catch (err) {
       if (err.errorCode === 2000) {
         setError("Incorrect username or password");
@@ -72,6 +84,32 @@ export default function LoginPage() {
         </section>
 
         <form className="login-form" onSubmit={handleSubmit}>
+          <div
+            className="login-role-switch"
+            role="radiogroup"
+            aria-label="Login role"
+          >
+            <button
+              type="button"
+              className={`login-role-option ${
+                loginRole === "employee" ? "is-active" : ""
+              }`}
+              aria-pressed={loginRole === "employee"}
+              onClick={() => setLoginRole("employee")}
+            >
+              Nhân viên
+            </button>
+            <button
+              type="button"
+              className={`login-role-option ${
+                loginRole === "admin" ? "is-active" : ""
+              }`}
+              aria-pressed={loginRole === "admin"}
+              onClick={() => setLoginRole("admin")}
+            >
+              Admin
+            </button>
+          </div>
           <Input
             label="Username"
             placeholder="Enter username"
@@ -143,6 +181,17 @@ export default function LoginPage() {
             <span>{loading ? "Đang đăng nhập..." : "Đăng nhập"}</span>
           </Button>
         </form>
+
+        <div style={{ marginTop: "1rem", display: "grid", gap: "0.5rem" }}>
+          <Button
+            variant="outline"
+            type="button"
+            style={{ width: "100%" }}
+            onClick={() => navigate(ROUTES.REGISTER)}
+          >
+            Đăng ký tài khoản nhân viên
+          </Button>
+        </div>
 
         <div style={{ marginTop: "1rem", display: "grid", gap: "0.5rem" }}>
           {LOGIN_HIGHLIGHTS.slice(1).map((item) => (

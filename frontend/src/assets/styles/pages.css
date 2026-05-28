@@ -19,6 +19,10 @@
   overflow: hidden;
 }
 
+.login-card--wide {
+  width: min(100%, 42rem);
+}
+
 .login-card::after {
   content: "";
   position: absolute;
@@ -73,6 +77,31 @@
 .login-form {
   display: grid;
   gap: 1rem;
+}
+
+.login-role-switch {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding: 0.35rem;
+  border-radius: 9999px;
+  border: 1px solid var(--outline-variant);
+  background: var(--surface-container-high);
+}
+
+.login-role-option {
+  border-radius: 9999px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--on-surface-variant);
+  transition: all 0.2s ease;
+}
+
+.login-role-option.is-active {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: var(--shadow-soft);
 }
 
 .login-password-toggle {

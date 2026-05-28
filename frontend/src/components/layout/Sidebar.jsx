@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
-import { APP_NAME, FOOTER_ITEMS, NAV_ITEMS } from "../../lib/constants";
+import { APP_NAME, FOOTER_ITEMS, getNavItems } from "../../lib/constants";
+import { getCurrentUserRole } from "../../lib/routes";
 import { cx } from "../../lib/helpers";
 
 function navClass({ isActive }) {
@@ -12,11 +13,14 @@ export default function Sidebar({
   onLogout,
   onSecuritySettings,
 }) {
+  const role = getCurrentUserRole();
+  const navItems = getNavItems(role);
+
   return (
     <>
       <aside className={cx("app-sidebar", open && "is-open")}>
         <nav className="app-sidebar__nav" aria-label="Primary">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}

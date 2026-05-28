@@ -11,7 +11,10 @@ const RSA_BITS = 2048;
  */
 export const hashSHA512 = async (data) => {
   const encoder = new TextEncoder();
-  const hashBuffer = await crypto.subtle.digest("SHA-512", encoder.encode(data));
+  const hashBuffer = await crypto.subtle.digest(
+    "SHA-512",
+    encoder.encode(data),
+  );
   return Array.from(new Uint8Array(hashBuffer))
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
@@ -24,7 +27,11 @@ export const hashSHA512 = async (data) => {
 const _deriveSeed = async (password) => {
   const encoder = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey(
-    "raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]
+    "raw",
+    encoder.encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
   );
   const bits = await crypto.subtle.deriveBits(
     {
@@ -34,7 +41,7 @@ const _deriveSeed = async (password) => {
       hash: "SHA-256",
     },
     keyMaterial,
-    PBKDF2_KEYLEN * 8
+    PBKDF2_KEYLEN * 8,
   );
   // Chuyển về binary string cho forge
   return String.fromCharCode(...new Uint8Array(bits));
@@ -55,7 +62,7 @@ export const generateRSAKeysFromPassword = async (password) => {
   // Sinh khóa đồng bộ để tránh lỗi Web Worker (prime.worker.js) trong môi trường Vite
   const keypair = forge.pki.rsa.generateKeyPair({
     bits: RSA_BITS,
-    prng: prng
+    prng: prng,
   });
 
   return {
